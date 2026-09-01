@@ -14,6 +14,13 @@ _DATEFMT = "%Y-%m-%d %H:%M:%S"
 def setup_logging(level: int = logging.INFO) -> None:
     LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
+    # Windows consoles default to cp1252 — make sure arrows / ✓ / ✗ don't crash output.
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
+        except (AttributeError, ValueError):
+            pass
+
     root = logging.getLogger()
     root.setLevel(level)
     root.handlers.clear()

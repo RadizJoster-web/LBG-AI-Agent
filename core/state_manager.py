@@ -25,7 +25,10 @@ class StateManager:
             logger.info("No state file at %s — first run, treating all files as new", self._path)
             return set()
         try:
-            data = json.loads(self._path.read_text(encoding="utf-8"))
+            text = self._path.read_text(encoding="utf-8").strip()
+            if not text:
+                return set()
+            data = json.loads(text)
             return set(data if isinstance(data, list) else data.get("processed", []))
         except (json.JSONDecodeError, OSError) as exc:
             logger.error("Could not read state file (%s); starting empty", exc)

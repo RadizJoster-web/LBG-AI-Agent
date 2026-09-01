@@ -5,6 +5,7 @@ saves a refreshable token to GOOGLE_TOKEN_PATH for later headless runs.
 """
 from __future__ import annotations
 
+import datetime as _dt
 import logging
 from dataclasses import dataclass
 
@@ -21,16 +22,38 @@ logger = logging.getLogger("drive_client")
 _FOLDER_MIME = "application/vnd.google-apps.folder"
 
 
+def _parse_rfc3339(value: str | None) -> _dt.datetime | None:
+    if not value:
+        return None
+    try:
+        return _dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
 @dataclass(frozen=True)
 class DriveFile:
     file_id: str
     file_name: str
     file_size_bytes: int | None
     platform_folder_name: str
+    created_time: _dt.datetime | None = None   # UTC, when the file was added to Drive
+    modified_time: _dt.datetime | None = None  # UTC
 
     @property
     def download_url(self) -> str:
         return config.DRIVE_DOWNLOAD_URL_TEMPLATE.format(file_id=self.file_id)
+
+    @property
+    def uploaded_local_date(self) -> _dt.date | None:
+        """created_time converted to the machine's local date."""
+        if self.created_time is None:
+            return None
+        return self.created_time.astimezone().date()
+
+    @property
+    def is_uploaded_today(self) -> bool:
+        return self.uploaded_local_date == _dt.date.today()
 
 
 class DriveClient:
@@ -109,13 +132,15 @@ class DriveClient:
             f"'{folder_id}' in parents "
             f"and mimeType != '{_FOLDER_MIME}' and trashed = false"
         )
-        raw = self._list(query, "files(id, name, size)")
+        raw = self._list(query, "files(id, name, size, createdTime, modifiedTime)")
         files = [
             DriveFile(
                 file_id=f["id"],
                 file_name=f["name"],
                 file_size_bytes=int(f["size"]) if f.get("size") is not None else None,
                 platform_folder_name=folder_name,
+                created_time=_parse_rfc3339(f.get("createdTime")),
+                modified_time=_parse_rfc3339(f.get("modifiedTime")),
             )
             for f in raw
         ]

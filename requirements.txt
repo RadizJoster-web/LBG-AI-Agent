@@ -5,3 +5,4 @@ google-generativeai==0.8.3
 requests==2.32.3
 python-dotenv==1.0.1
 python-slugify==8.0.4
+Flask==3.0.3

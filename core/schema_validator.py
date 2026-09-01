@@ -47,8 +47,7 @@ def validate_gemini_output(data: dict, *, game_label: str) -> dict:
             logger.warning("%s: invalid releaseYear %r -> null", game_label, year)
         out["releaseYear"] = None
 
-    lang = data.get("language")
-    out["language"] = lang.strip() if isinstance(lang, str) and lang.strip() else "English"
+    # language is NOT sourced from Gemini (CLAUDE.md workflow #3) — see data_mapper
 
     genres = data.get("genres")
     if isinstance(genres, list):
@@ -87,8 +86,7 @@ def validate_sanity_payload(doc: dict) -> None:
         raise PayloadError("a downloadLink entry is missing fileSize")
 
     if not doc.get("language"):
-        logger.warning("%s: language empty -> 'English'", doc.get("_id"))
-        doc["language"] = "English"
+        raise PayloadError("language missing")
 
     if not doc.get("genre"):
         logger.warning("%s: no genres resolved; proceeding with empty genre array", doc.get("_id"))

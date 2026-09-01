@@ -16,24 +16,23 @@ import config
 
 logger = logging.getLogger("gemini_client")
 
-_PROMPT_TEMPLATE = """You are a video game metadata database. Given a game title and its platform,
-return ONLY a valid JSON object with the following fields.
-Do not include any explanation, markdown formatting, or code fences.
+_PROMPT_TEMPLATE = """Kamu adalah basis data metadata video game. Diberi judul game dan platform-nya,
+kembalikan HANYA satu objek JSON valid dengan field berikut.
+Jangan sertakan penjelasan, format markdown, atau pagar kode.
 
-Required JSON schema:
+Skema JSON yang diminta:
 {{
-  "fullDescription": "string - A 2-3 paragraph description of the game covering gameplay, story, and critical reception.",
-  "developer": "string - The primary developer studio name.",
-  "publisher": "string - The primary publisher name.",
-  "releaseYear": "number - The original release year as a 4-digit integer (e.g. 2005). If unknown, use null.",
-  "language": "string - The primary language of this game version (e.g. 'English', 'Japanese', 'Multi-Language'). If unknown, default to 'English'.",
+  "fullDescription": "string - Deskripsi game 2-3 paragraf DALAM BAHASA INDONESIA yang mencakup gameplay, cerita, dan penerimaan kritikus. WAJIB ditulis dalam Bahasa Indonesia yang natural meskipun game aslinya berbahasa Inggris. Pisahkan antar-paragraf dengan satu baris kosong.",
+  "developer": "string - Nama studio pengembang utama (biarkan sesuai nama aslinya, jangan diterjemahkan).",
+  "publisher": "string - Nama penerbit utama (biarkan sesuai nama aslinya, jangan diterjemahkan).",
+  "releaseYear": "number - Tahun rilis asli sebagai bilangan bulat 4 digit (mis. 2005). Jika tidak diketahui, gunakan null.",
   "genres": ["string"]
 }}
 
-For "genres": prefer names from this list: [{genre_whitelist}].
-If none fit, you may return a concise standard genre name.
+Untuk "genres": utamakan nama dari daftar ini: [{genre_whitelist}].
+Jika tidak ada yang cocok, kembalikan satu nama genre standar yang ringkas (dalam bahasa Inggris, seperti daftar di atas).
 
-Game title: "{cleaned_title}"
+Judul game: "{cleaned_title}"
 Platform: "{platform_name}"
 """
 

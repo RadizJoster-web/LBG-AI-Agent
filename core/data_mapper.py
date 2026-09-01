@@ -51,7 +51,9 @@ def _portable_text(description: str) -> list[dict]:
     return blocks
 
 
-def _download_link(drive_file: DriveFile, size_str: str, disc_label: str | None) -> dict:
+def make_download_link(drive_file: DriveFile, cleaned: CleanedTitle) -> dict:
+    """A single `downloadLink` item (used for create and for multi-disc patch)."""
+    size_str = format_file_size(drive_file.file_size_bytes) or ""
     link = {
         "_type": "downloadLink",
         "_key": f"dl-{drive_file.file_id[:16]}",
@@ -60,8 +62,8 @@ def _download_link(drive_file: DriveFile, size_str: str, disc_label: str | None)
         "url": drive_file.download_url,
         "fileSize": size_str,  # rule 6 — also inside each item
     }
-    if disc_label:
-        link["optionalLabel"] = disc_label
+    if cleaned.disc_number:
+        link["optionalLabel"] = cleaned.disc_number
     return link
 
 
@@ -99,7 +101,7 @@ def build_game_document(
     # ── file size (rule 6: root + per-link) ──
     size_str = format_file_size(drive_file.file_size_bytes)
 
-    link_item = _download_link(drive_file, size_str or "", cleaned.disc_number)
+    link_item = make_download_link(drive_file, cleaned)
 
     doc: dict = {
         "_type": "game",
@@ -110,7 +112,7 @@ def build_game_document(
         "developer": enriched["developer"],
         "publisher": enriched["publisher"],
         "releaseYear": enriched["releaseYear"],
-        "language": enriched.get("language") or config.DEFAULT_LANGUAGE,  # rule 3
+        "language": config.DEFAULT_LANGUAGE,  # rule 3 — single string, not from Gemini
         "popularityScore": 0,                                             # rule 8
         "fileSize": size_str,                                             # rule 6 (root)
         "thumbnail": None,                                                # rule 7

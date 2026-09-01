@@ -56,7 +56,8 @@ SANITY_MUTATE_URL: str = (
 # ─────────────── Behaviour ───────────────
 CREATE_MISSING_GENRES: bool = _bool("CREATE_MISSING_GENRES", True)
 DRY_RUN: bool = _bool("DRY_RUN", False)
-DEFAULT_LANGUAGE: str = "English"
+# CLAUDE.md workflow #3: language is NOT requested from Gemini — always this value.
+DEFAULT_LANGUAGE: str = "Inggris"
 DEFAULT_REGION_SLUG: str = "usa"
 
 # ─────────────── Paths ───────────────

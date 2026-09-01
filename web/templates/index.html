@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LBG — Ingestion Review</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>LBG Ingestion Agent</h1>
+        <p class="sub">
+          Dataset <code>{{ dataset }}</code> {% if dry_run %}<span
+            class="badge badge-warn"
+            >DRY RUN</span
+          >{% endif %}
+        </p>
+      </div>
+      <button id="btn-scan" class="btn btn-primary">Pindai Google Drive</button>
+    </header>
+
+    <main>
+      <section id="intro" class="panel">
+        <p>
+          Klik <strong>Pindai Google Drive</strong> untuk memuat game yang belum
+          diproses. Game yang di-upload <strong>hari ini</strong> akan otomatis
+          tercentang. Tidak ada apa pun yang dikirim ke Sanity sampai kamu
+          menekan tombol upload.
+        </p>
+      </section>
+
+      <section id="loading" class="panel hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Memuat data dari Google Drive…</p>
+      </section>
+
+      <section id="error" class="panel error hidden"></section>
+
+      <section id="results" class="hidden">
+        <div class="toolbar">
+          <div class="summary" id="summary"></div>
+          <div class="filters">
+            <label
+              ><input type="checkbox" id="f-only-today" /> Hanya hari ini</label
+            >
+            <label
+              ><input type="checkbox" id="f-hide-exists" checked /> Sembunyikan
+              yang sudah ada</label
+            >
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="grid">
+            <thead>
+              <tr>  
+                <th class="col-check">
+                  <input type="checkbox" id="check-all" title="Pilih semua" />
+                </th>
+                <th>Judul</th>
+                <th>Platform</th>
+                <th>Region</th>
+                <th>Disc</th>
+                <th>Ukuran</th>
+                <th>Di-upload</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="grid-body"></tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <span id="selected-count">0 dipilih</span>
+          <div class="spacer"></div>
+          <button id="btn-upload-today" class="btn">
+            Up Semua yang Baru (hari ini)
+          </button>
+          <button id="btn-upload" class="btn btn-primary">Up Terpilih</button>
+        </div>
+      </section>
+
+      <section id="progress" class="panel hidden">
+        <h2>Mengunggah…</h2>
+        <div class="bar"><div id="bar-fill" class="bar-fill"></div></div>
+        <p id="progress-label">0 / 0</p>
+        <ul id="log" class="log"></ul>
+        <div id="progress-done" class="hidden">
+          <p id="done-summary" class="done-summary"></p>
+          <button id="btn-rescan" class="btn btn-primary">Pindai Ulang</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
