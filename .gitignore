@@ -1,0 +1,27 @@
+# Secrets & config
+.env
+
+# Google OAuth
+credentials/client_secret.json
+credentials/token.json
+token.json
+
+# Logs
+logs/
+*.log
+
+# State
+state/processed_files.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
